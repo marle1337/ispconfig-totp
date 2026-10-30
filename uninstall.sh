@@ -34,6 +34,10 @@ WEB="$INTERFACE/web"
 KEY_DIR="$(dirname "$INTERFACE")/totpauth"
 
 [ -f "$INTERFACE/lib/config.inc.php" ] || fail "$INTERFACE/lib/config.inc.php not found - pass the interface path"
+# Test stub only; refused as root, see install.sh.
+if [ -n "${TOTPAUTH_SETUP_CMD:-}" ] && [ "$(id -u)" = "0" ]; then
+	fail "TOTPAUTH_SETUP_CMD is for tests only and is refused as root - unset it"
+fi
 
 rm -rf "$WEB/totpauth"
 rm -f "$WEB/js/js.d/totpauth.js" "$WEB/js/js.d/totpauth-qr.js"

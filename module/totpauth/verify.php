@@ -37,6 +37,9 @@ function totpauth_end_login(): void
 function totpauth_finish(string $how): void
 {
 	global $app, $username, $ip;
+	// New session id for the opened panel session: an id seen before the
+	// second factor (fixated or leaked) must not carry over into the panel.
+	session_regenerate_id(true);
 	$_SESSION['s'] = $_SESSION['s_pending'];
 	totpauth_end_login();
 	$app->auth_log("Successful login for user '" . $username . "' with authenticator app (" . $how . ") from " . $ip . ' at ' . date('Y-m-d H:i:s') . ' with session ID ' . session_id());

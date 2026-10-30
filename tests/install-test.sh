@@ -84,7 +84,41 @@ run "$IFACE"; code=$?
 check "refused with exit 1" "[ $code -eq 1 ] && grep -q 'restore it from a backup' '$WORK/last.log'"
 check "damaged key left as it was" "[ \"\$(cat '$KEY')\" = short ]"
 
-printf '6. uninstall keeps data, --purge removes it\n'
+printf '6. check.sh\n'
+crun() { sh "$REPO/check.sh" "$@" > "$WORK/last.log" 2>&1; }
+head -c 32 /dev/urandom > "$KEY"   # undo the damaged key of step 5
+chmod 400 "$KEY"
+if [ "$(ls -l "$KEY" | cut -c5-10)" = "------" ]; then
+	crun "$IFACE"; code=$?
+	check "all fine: exit 0, silent" "[ $code -eq 0 ] && [ ! -s '$WORK/last.log' ]"
+	crun -v "$IFACE"; code=$?
+	check "-v lists the checks" "[ $code -eq 0 ] && grep -q 'all checks passed' '$WORK/last.log'"
+else
+	# No POSIX permissions here (Git Bash on Windows): the key always looks
+	# readable by others, which must be the only problem reported.
+	crun "$IFACE"; code=$?
+	check "all fine but key mode (no POSIX permissions here)" "[ $code -eq 1 ] && [ \"\$(grep -c PROBLEM '$WORK/last.log')\" = 1 ] && grep -q 'readable by group or others' '$WORK/last.log'"
+fi
+check "installer recorded the ISPConfig version" "[ \"\$(cat '$WEB/totpauth/ISPC_VERSION')\" = 3.3.1p1 ]"
+printf "<?php\ndefine('ISPC_APP_VERSION', '3.3.2');\n" > "$IFACE/lib/config.inc.php"
+crun "$IFACE"; code=$?
+check "ISPConfig update reported" "[ $code -eq 1 ] && grep -q 'installed for 3.3.1p1' '$WORK/last.log'"
+printf "<?php\ndefine('ISPC_APP_VERSION', '3.3.1p1');\n" > "$IFACE/lib/config.inc.php"
+mv "$WEB/js/js.d/totpauth.js" "$WORK/js.bak"
+crun "$IFACE"; code=$?
+mv "$WORK/js.bak" "$WEB/js/js.d/totpauth.js"
+check "missing script reported" "[ $code -eq 1 ] && grep -q 'files missing:.*totpauth.js' '$WORK/last.log'"
+cp "$WEB/login/index.php" "$WORK/index.bak"
+printf "<?php\n\$_SESSION['s_pending'] = 1;\n" > "$WEB/login/index.php"
+crun "$IFACE"; code=$?
+cp "$WORK/index.bak" "$WEB/login/index.php"
+check "missing login hook reported" "[ $code -eq 1 ] && grep -q 'login event' '$WORK/last.log'"
+echo 30 > "$WORK/force_days"
+crun "$IFACE"; code=$?
+echo 0 > "$WORK/force_days"
+check "forced password change reported" "[ $code -eq 1 ] && grep -q 'Force password change' '$WORK/last.log'"
+
+printf '7. uninstall keeps data, --purge removes it\n'
 urun "$IFACE"; code=$?
 check "exit 0" "[ $code -eq 0 ]"
 check "module and scripts gone" "[ ! -e '$WEB/totpauth' ] && [ ! -e '$WEB/js/js.d/totpauth.js' ]"

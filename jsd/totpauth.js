@@ -27,8 +27,8 @@
 
 	/* Used before the first answer arrives, or when none arrives. */
 	var FALLBACK = {
-		totpauth_err_network_txt: 'Der Server war nicht erreichbar. Prüf deine Verbindung und versuch es noch einmal.',
-		totpauth_err_unexpected_txt: 'Der Server hat unerwartet geantwortet. Lade die Seite neu und versuch es noch einmal. Bleibt der Fehler, sag dem Administrator Bescheid.'
+		totpauth_err_network_txt: 'The server could not be reached. Check your connection and try again.',
+		totpauth_err_unexpected_txt: 'The server answered unexpectedly. Reload the page and try again. If the error stays, tell the administrator.'
 	};
 
 	function t(key) {
@@ -300,7 +300,7 @@
 			var blob = new Blob([text], { type: 'text/plain' });
 			var a = el('a');
 			a.href = URL.createObjectURL(blob);
-			a.download = 'ispconfig-wiederherstellungscodes-' + location.hostname + '.txt';
+			a.download = 'ispconfig-recovery-codes-' + location.hostname + '.txt';
 			document.body.appendChild(a);
 			a.click();
 			setTimeout(function () {

@@ -40,7 +40,11 @@ STAGE="$PANEL_ROOT/totpauth-staging"
 BACKUP_DIR="$PANEL_ROOT/totpauth-backups"
 TARGET="$WEB/totpauth"
 # Tests replace the database step with TOTPAUTH_SETUP_CMD (an executable);
-# on a panel it is always install/setup.php.
+# on a panel it is always install/setup.php. Refused as root, so a stray
+# variable (sudo -E) can never run another program with root rights.
+if [ -n "${TOTPAUTH_SETUP_CMD:-}" ] && [ "$(id -u)" = "0" ]; then
+	fail "TOTPAUTH_SETUP_CMD is for tests only and is refused as root - unset it"
+fi
 setup() {
 	if [ -n "${TOTPAUTH_SETUP_CMD:-}" ]; then
 		"$TOTPAUTH_SETUP_CMD" "$@"
@@ -59,18 +63,12 @@ printf 'totpauth %s\n' "$VERSION"
 # The hooks this relies on. An ISPConfig update may move them; then the
 # login would silently skip the app, so the installer refuses instead.
 # ---------------------------------------------------------------------------
-APP_VERSION="$(sed -n "s/.*define('ISPC_APP_VERSION',[ ]*'\([^']*\)').*/\1/p" "$INTERFACE/lib/config.inc.php" | head -1)"
+. "$HERE/install/hooks.sh"
+APP_VERSION="$(totpauth_ispc_version "$INTERFACE")"
 [ -n "$APP_VERSION" ] || fail "cannot read ISPC_APP_VERSION from $INTERFACE/lib/config.inc.php"
 printf 'Panel: ISPConfig %s\n' "$APP_VERSION"
 
-grep -q "plugin.d" "$INTERFACE/lib/classes/plugin.inc.php" 2>/dev/null \
-	|| fail "lib/classes/plugin.inc.php no longer loads web/<module>/lib/plugin.d - the plugin would never run"
-grep -q "raiseEvent('login'" "$WEB/login/index.php" 2>/dev/null \
-	|| fail "login/index.php no longer raises the login event - the app would be skipped at login"
-grep -q "js.d" "$WEB/index.php" 2>/dev/null \
-	|| fail "index.php no longer loads js/js.d - the profile would show no setup"
-grep -q "s_pending" "$WEB/login/index.php" 2>/dev/null \
-	|| fail "login/index.php no longer parks sessions in s_pending - this version of ISPConfig is not supported"
+missing="$(totpauth_hooks "$INTERFACE")" || fail "$(printf '%s' "$missing" | head -1)"
 printf 'Hooks: plugin.d, login event, js.d found\n'
 
 check="$(setup "$INTERFACE" check)" || fail "the database check failed, see above"
@@ -109,6 +107,8 @@ rm -rf "$STAGE"
 mkdir -p "$STAGE"
 cp -R "$HERE/module/totpauth" "$STAGE/totpauth"
 printf '%s\n' "$VERSION" > "$STAGE/totpauth/VERSION"
+# check.sh compares this with the panel's version to spot an ISPConfig update
+printf '%s\n' "$APP_VERSION" > "$STAGE/totpauth/ISPC_VERSION"
 cp "$HERE/jsd/totpauth.js" "$HERE/jsd/totpauth-qr.js" "$STAGE/"
 
 if command -v php >/dev/null 2>&1; then

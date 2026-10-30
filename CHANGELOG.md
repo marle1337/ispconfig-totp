@@ -4,6 +4,26 @@ Alle nennenswerten Änderungen.
 Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.2.0] — 2026-10-30
+
+Eigene Fassung (Fork von brightcolor/ispconfig-totp 0.1.0).
+
+### Neu
+
+- Texte dänisch (`dk.lng`, der Sprachcode von ISPConfig für Dänisch).
+- `check.sh` für Cron und nach ISPConfig-Updates: meldet fehlende Dateien,
+  ein ISPConfig-Update seit der Installation, fehlende Einhakpunkte, einen
+  fehlenden oder lesbaren Schlüssel und den erzwungenen Passwortwechsel.
+- Der Installer schreibt die ISPConfig-Version in `totpauth/ISPC_VERSION`.
+
+### Geändert
+
+- Neue Sitzungs-ID, sobald der Code stimmt (`session_regenerate_id`).
+- `TOTPAUTH_SETUP_CMD` (nur für Tests) wird als root abgelehnt.
+- Einhakpunkte in `install/hooks.sh`, von Installer und `check.sh` geteilt.
+- Ersatztexte im Skript englisch statt deutsch, Dateiname der
+  Wiederherstellungscodes englisch.
+
 ## [0.1.0] — 2026-09-21
 
 Erste Fassung.
