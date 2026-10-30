@@ -4,6 +4,16 @@ Alle nennenswerten Änderungen.
 Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.2.1] — 2026-10-30
+
+### Behoben
+
+- Einrichtungsfenster flackerte und verlor seinen Inhalt: `dataLogNotification()`
+  von ISPConfig überschreibt alle `.modal-body` der Seite alle paar Sekunden.
+  Der Fensterinhalt hat jetzt eine eigene Klasse `totpauth-body`.
+- Codefelder tragen `no-page-form-change`, damit ISPConfig das Profilformular
+  nicht als geändert ansieht.
+
 ## [0.2.0] — 2026-10-30
 
 Eigene Fassung (Fork von brightcolor/ispconfig-totp 0.1.0).

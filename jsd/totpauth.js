@@ -126,7 +126,8 @@
 			'.totpauth-secret{display:block;margin:6px 0 0;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:15px;letter-spacing:.08em;word-break:break-all;user-select:all}',
 			'.totpauth-codes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 18px;margin:12px 0;padding:14px 16px;border:1px solid var(--bc-line,#ddd);border-radius:8px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:15px;list-style:none}',
 			'.totpauth-code-input{max-width:220px;font-size:20px;letter-spacing:.2em;text-align:center}',
-			'.totpauth-modal .modal-body > p{margin-bottom:12px}',
+			'.totpauth-modal .totpauth-body{position:relative;padding:15px}',
+			'.totpauth-modal .totpauth-body > p{margin-bottom:12px}',
 			'.totpauth-modal .alert{margin:12px 0 0}',
 			'.totpauth-actions{display:flex;gap:8px;flex-wrap:wrap}'
 		].join('\n');
@@ -140,7 +141,11 @@
 
 	var modal = null;
 
-	/* One Bootstrap modal, refilled for each dialog. */
+	/*
+	 * One Bootstrap modal, refilled for each dialog. The body deliberately
+	 * has no "modal-body" class: ISPConfig's dataLogNotification() rewrites
+	 * every $('.modal-body') on the page every few seconds.
+	 */
 	function openModal(title, body, footer, focusSelector) {
 		injectStyle();
 		if (!modal) {
@@ -153,7 +158,7 @@
 			modal.innerHTML = '<div class="modal-dialog" role="document"><div class="modal-content">'
 				+ '<div class="modal-header"><button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>'
 				+ '<h4 class="modal-title" id="totpauth-modal-title"></h4></div>'
-				+ '<div class="modal-body"></div><div class="modal-footer"></div></div></div>';
+				+ '<div class="totpauth-body"></div><div class="modal-footer"></div></div></div>';
 			document.body.appendChild(modal);
 			$(modal).on('shown.bs.modal', function () {
 				var target = modal.getAttribute('data-focus');
@@ -163,7 +168,7 @@
 		}
 		modal.querySelector('.close').setAttribute('aria-label', t('totpauth_close_txt'));
 		modal.querySelector('.modal-title').textContent = title;
-		fill(modal.querySelector('.modal-body'), body);
+		fill(modal.querySelector('.totpauth-body'), body);
 		fill(modal.querySelector('.modal-footer'), footer);
 		modal.setAttribute('data-focus', focusSelector || '');
 		if (!$(modal).hasClass('in')) {
@@ -188,7 +193,8 @@
 	}
 
 	function codeInput(id) {
-		var input = el('input', 'form-control totpauth-code-input');
+		// no-page-form-change: typing here is not an unsaved change of the profile form
+		var input = el('input', 'form-control totpauth-code-input no-page-form-change');
 		input.id = id;
 		input.type = 'text';
 		input.setAttribute('inputmode', 'numeric');
