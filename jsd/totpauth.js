@@ -469,9 +469,11 @@
 		link.href = '#';
 		link.addEventListener('click', function (e) {
 			e.preventDefault();
-			// Same as the menu: switch to the tools module, open the settings.
+			// Switch to the tools module, whose start page is the settings.
+			// No redirect argument: capp.php only takes "page.php?id=<n>" and
+			// silently does nothing otherwise.
 			if (window.ISPConfig && window.ISPConfig.capp) {
-				window.ISPConfig.capp('tools', 'tools/user_settings.php');
+				window.ISPConfig.capp('tools');
 			}
 		});
 		banner.appendChild(link);

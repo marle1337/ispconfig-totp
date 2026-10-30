@@ -4,6 +4,14 @@ Alle nennenswerten Änderungen.
 Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.3.1] — 2026-10-30
+
+### Behoben
+
+- Link im Banner tat nichts: `capp.php` nimmt als Weiterleitung nur
+  `seite.php?id=<n>`. Der Link öffnet jetzt das Modul Werkzeuge, dessen
+  Startseite die Einstellungen sind.
+
 ## [0.3.0] — 2026-10-30
 
 ### Neu
