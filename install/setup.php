@@ -29,8 +29,10 @@ mysqli_report(MYSQLI_REPORT_OFF);
 /*
  * The panel's own database user may only read and write (SELECT, INSERT,
  * UPDATE, DELETE on the panel database), which covers the new table once it
- * exists. Creating and dropping it needs MySQL's root, reached through the
- * local socket the way the mysql client does for the system's root user.
+ * exists. Creating and dropping it needs MySQL's root: first through the
+ * local socket the way the mysql client does for the system's root user,
+ * then, where MySQL's root has a password, with the credentials ISPConfig
+ * keeps for itself in server/lib/mysql_clientdb.conf.
  */
 if ($mode === 'check') {
 	$db = @new mysqli($conf['db_host'], $conf['db_user'], $conf['db_password'], $conf['db_database'], (int) ($conf['db_port'] ?? 3306));
@@ -38,6 +40,18 @@ if ($mode === 'check') {
 } else {
 	$db = @new mysqli('localhost', 'root', '', $conf['db_database']);
 	$who = "MySQL's root over the local socket (run this as the system's root)";
+	$clientdb = dirname($iface) . '/server/lib/mysql_clientdb.conf';
+	if ($db->connect_errno && is_readable($clientdb)) {
+		// The file is plain PHP setting $clientdb_host, _user, _password; read it in its own scope.
+		$cred = (function (string $file): array {
+			include $file;
+			return array($clientdb_host ?? '', $clientdb_user ?? '', $clientdb_password ?? '');
+		})($clientdb);
+		if ($cred[1] !== '') {
+			$db = @new mysqli($cred[0] !== '' ? $cred[0] : 'localhost', $cred[1], $cred[2], $conf['db_database']);
+			$who = "MySQL's root over the local socket, nor as '" . $cred[1] . "' from " . $clientdb;
+		}
+	}
 }
 if ($db->connect_errno) {
 	fwrite(STDERR, "error: cannot reach the panel database as $who: " . $db->connect_error . "\n");

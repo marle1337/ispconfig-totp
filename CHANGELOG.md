@@ -4,6 +4,14 @@ Alle nennenswerten Änderungen.
 Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.3.2] — 2026-10-30
+
+### Behoben
+
+- Installer scheiterte, wenn MySQLs root ein Passwort hat (kein Login über
+  den Socket). `setup.php` nimmt dann die Zugangsdaten, die ISPConfig selbst
+  in `server/lib/mysql_clientdb.conf` hält.
+
 ## [0.3.1] — 2026-10-30
 
 ### Behoben
