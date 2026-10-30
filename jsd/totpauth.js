@@ -129,7 +129,8 @@
 			'.totpauth-modal .totpauth-body{position:relative;padding:15px}',
 			'.totpauth-modal .totpauth-body > p{margin-bottom:12px}',
 			'.totpauth-modal .alert{margin:12px 0 0}',
-			'.totpauth-actions{display:flex;gap:8px;flex-wrap:wrap}'
+			'.totpauth-actions{display:flex;gap:8px;flex-wrap:wrap}',
+			'.totpauth-banner{margin:0 0 15px}'
 		].join('\n');
 		var style = el('style');
 		style.id = 'totpauth-style';
@@ -409,6 +410,7 @@
 			});
 			row.appendChild(label);
 			row.appendChild(col);
+			showBanner(status);
 
 			// The email code stays off while the app is active; the plugin
 			// enforces it on save, the select shows it.
@@ -436,6 +438,44 @@
 			}
 		});
 		load();
+	}
+
+	/* ---- banner: red until the account has a second factor ------------ */
+
+	var banner = null;
+
+	/*
+	 * Sits above the page form, outside #pageContent, so it survives the
+	 * AJAX page loads. Goes away once the app or the email code is set up.
+	 */
+	function showBanner(status) {
+		if (status.has_2fa) {
+			if (banner) {
+				banner.remove();
+				banner = null;
+			}
+			return;
+		}
+		var form = document.getElementById('pageForm');
+		if (banner || !form) {
+			return;
+		}
+		injectStyle();
+		banner = el('div', 'alert alert-danger totpauth-banner');
+		banner.setAttribute('role', 'alert');
+		banner.appendChild(el('strong', '', t('totpauth_banner_txt')));
+		banner.appendChild(document.createTextNode(' '));
+		var link = el('a', 'alert-link', t('totpauth_banner_link_txt'));
+		link.href = '#';
+		link.addEventListener('click', function (e) {
+			e.preventDefault();
+			// Same as the menu: switch to the tools module, open the settings.
+			if (window.ISPConfig && window.ISPConfig.capp) {
+				window.ISPConfig.capp('tools', 'tools/user_settings.php');
+			}
+		});
+		banner.appendChild(link);
+		form.parentNode.insertBefore(banner, form);
 	}
 
 	/* ---- admin: System -> Users -------------------------------------- */
@@ -498,5 +538,7 @@
 		}
 		new MutationObserver(scan).observe(content, { childList: true });
 		scan();
+		// No banner when the status is unknown (mail users, expired session).
+		call('status').then(showBanner, function () {});
 	});
 })(window.jQuery);

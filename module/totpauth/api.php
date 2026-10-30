@@ -95,9 +95,14 @@ try {
 		case 'status':
 			$store = totpauth_app_store();
 			$row = $store->get($uid);
+			// Read fresh: the session copy of the user is from the login.
+			$otp = $app->db->queryOneRecord('SELECT otp_type FROM sys_user WHERE userid = ?', $uid);
+			$emailCode = is_array($otp) && ($otp['otp_type'] ?? 'none') !== 'none';
 			totpauth_reply(array(
 				'ok' => true,
 				'enabled' => $row !== null,
+				// any second factor, app or ISPConfig's email code: the banner asks for one until then
+				'has_2fa' => $row !== null || $emailCode,
 				'recovery_left' => $row !== null ? $store->recovery_left($row) : 0,
 				'locked' => $row !== null && (int) $row['failed'] >= TOTPAUTH_MAX_TRIES,
 				'force_change' => $isAdmin && totpauth_force_change_active(),

@@ -4,6 +4,15 @@ Alle nennenswerten Änderungen.
 Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.3.0] — 2026-10-30
+
+### Neu
+
+- Rotes Banner über jeder Panel-Seite, solange das Konto keinen zweiten
+  Faktor hat (weder App noch Code per E-Mail), mit Link zu den Einstellungen.
+  Verschwindet, sobald einer eingerichtet ist.
+- `api.php?action=status` liefert `has_2fa`.
+
 ## [0.2.1] — 2026-10-30
 
 ### Behoben

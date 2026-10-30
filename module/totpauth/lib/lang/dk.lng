@@ -43,6 +43,10 @@ $wb['totpauth_disable_title_txt'] = 'Slå authenticator-appen fra';
 $wb['totpauth_disable_desc_txt'] = 'Bekræft med en kode fra appen eller en gendannelseskode. Derefter logger du kun ind med adgangskode, indtil du vælger en anden faktor igen.';
 $wb['totpauth_disabled_txt'] = 'App-login er slået fra.';
 
+// Banner
+$wb['totpauth_banner_txt'] = 'Din konto har ikke to-faktor-godkendelse. Sæt en authenticator-app op for at beskytte den.';
+$wb['totpauth_banner_link_txt'] = 'Sæt den op nu';
+
 // Admin
 $wb['totpauth_admin_reset_txt'] = 'Nulstil app-login';
 $wb['totpauth_admin_confirm_txt'] = 'Nulstil app-login for denne konto? Brugeren logger så kun ind med adgangskode og kan sætte appen op igen.';

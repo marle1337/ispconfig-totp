@@ -43,6 +43,10 @@ $wb['totpauth_disable_title_txt'] = 'Turn off the authenticator app';
 $wb['totpauth_disable_desc_txt'] = 'Confirm with a code from the app or a recovery code. Afterwards you sign in with your password only, until you choose a second factor again.';
 $wb['totpauth_disabled_txt'] = 'The app login is turned off.';
 
+// Banner
+$wb['totpauth_banner_txt'] = 'Your account has no two-factor authentication. Set up an authenticator app to protect it.';
+$wb['totpauth_banner_link_txt'] = 'Set it up now';
+
 // Admin
 $wb['totpauth_admin_reset_txt'] = 'Reset app login';
 $wb['totpauth_admin_confirm_txt'] = 'Reset the app login of this account? The user then signs in with the password only and can set up the app again.';

@@ -43,6 +43,10 @@ $wb['totpauth_disable_title_txt'] = 'Authenticator-App deaktivieren';
 $wb['totpauth_disable_desc_txt'] = 'Bestätige mit einem Code aus der App oder einem Wiederherstellungscode. Danach meldest du dich nur mit Passwort an, bis du wieder einen zweiten Faktor wählst.';
 $wb['totpauth_disabled_txt'] = 'Die App-Anmeldung ist deaktiviert.';
 
+// Banner
+$wb['totpauth_banner_txt'] = 'Dein Konto hat keine Zwei-Faktor-Authentifizierung. Richte eine Authenticator-App ein, um es zu schützen.';
+$wb['totpauth_banner_link_txt'] = 'Jetzt einrichten';
+
 // Admin
 $wb['totpauth_admin_reset_txt'] = 'App-Anmeldung zurücksetzen';
 $wb['totpauth_admin_confirm_txt'] = 'App-Anmeldung dieses Kontos zurücksetzen? Der Nutzer meldet sich danach nur mit Passwort an und kann die App neu einrichten.';
